@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.tp2navigationcompose.ui.theme.TP2NavigationComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -63,8 +64,12 @@ fun AppNavigation() {
         composable("form") {
             FormScreen(navController = navController)
         }
-        composable("showForm") {
-            ShowFormScreen(navController = navController)
+        composable(
+            "showForm/{name}",
+            arguments = listOf(navArgument("name") {defaultValue =""}))
+        {   backStackEntry ->
+            val name = backStackEntry.arguments?.getString("name") ?: ""
+            ShowFormScreen(navController = navController, name)
         }
     }
 }
@@ -107,7 +112,7 @@ fun FormScreen(navController : NavController) {
                 .padding(16.dp)
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { navController.navigate("showForm")}) {
+        Button(onClick = { navController.navigate("showForm/$name")}) {
             Text(text = "Valider")
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -118,7 +123,7 @@ fun FormScreen(navController : NavController) {
 }
 
 @Composable
-fun ShowFormScreen(navController: NavController) {
+fun ShowFormScreen(navController: NavController, name : String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -127,6 +132,8 @@ fun ShowFormScreen(navController: NavController) {
         horizontalAlignment =  Alignment.CenterHorizontally
     ) {
         Text(text = "Affichage du formulaire", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(text = name, style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = { navController.popBackStack()}) {
             Text(text = "Retour")
